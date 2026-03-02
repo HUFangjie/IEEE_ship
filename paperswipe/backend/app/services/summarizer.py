@@ -56,3 +56,28 @@ def render_markdown(summary: dict, payload: dict) -> str:
         f"- **Results**: {summary.get('results','')}\n"
         f"- **Limitations**: {summary.get('limitations','')}\n"
     )
+
+
+async def summarize_kimi(api_key: str, model: str, payload: dict) -> tuple[dict, str]:
+    if not api_key:
+        s = default_summary(payload.get("user_query", "query"))
+        return s, render_markdown(s, payload)
+    body = {
+        "model": model,
+        "response_format": {"type": "json_object"},
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+        ],
+        "temperature": 0.2,
+    }
+    async with httpx.AsyncClient(timeout=25) as client:
+        resp = await client.post(
+            "https://api.moonshot.cn/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}"},
+            json=body,
+        )
+        resp.raise_for_status()
+        content = resp.json()["choices"][0]["message"]["content"]
+        data = json.loads(content)
+        return data, render_markdown(data, payload)

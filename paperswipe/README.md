@@ -9,12 +9,12 @@
 
 ## 1. 申请 API Key
 - IEEE API：到 IEEE Developer Portal 申请 Metadata API key。
-- LLM API：OpenAI（默认）或 Gemini。
+- LLM API：Kimi（默认）或 OpenAI（Gemini 可选）。
 
 ## 2. 启动
 ```bash
 cp .env.example .env
-# 填入 IEEE_API_KEY, OPENAI_API_KEY 等
+# 填入 IEEE_API_KEY, KIMI_API_KEY / OPENAI_API_KEY 等
 docker compose up --build
 ```
 
@@ -22,7 +22,7 @@ docker compose up --build
 - 后端：http://localhost:8000/docs
 
 ## 3. 使用流程
-1. 打开 `/settings` 保存 IEEE / LLM key 和 library 路径。
+1. 打开 `/settings` 保存 IEEE / LLM key（默认 Kimi）和 library 路径。
 2. 回到首页 `/`，设置 query（默认 federated learning）、年份范围、limit，点击 **Fetch & Start**。
 3. 在 `/swipe` 页面进行 Like/Skip。
 4. Like 后入库到 `library/TIFS/<year>/<doi_or_hash>/`：

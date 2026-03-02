@@ -12,7 +12,7 @@ from ..db import SessionLocal, get_db
 from ..models import Job, Paper, Summary
 from ..schemas import SearchRequest
 from ..services.ieee_client import IEEEClient
-from ..services.summarizer import default_summary, summarize_openai
+from ..services.summarizer import default_summary, summarize_kimi, summarize_openai
 from ..settings import get_settings
 
 router = APIRouter(prefix="/api/search", tags=["search"])
@@ -65,8 +65,18 @@ async def process_search_job(job_id: str, req: SearchRequest):
                 "user_query": req.query,
             }
             try:
-                summary_json, summary_md = await summarize_openai(settings.openai_api_key, "gpt-4o-mini", payload)
+                if settings.llm_provider == "kimi":
+                    model = "moonshot-v1-8k"
+                    summary_json, summary_md = await summarize_kimi(settings.kimi_api_key, model, payload)
+                elif settings.llm_provider == "openai":
+                    model = "gpt-4o-mini"
+                    summary_json, summary_md = await summarize_openai(settings.openai_api_key, model, payload)
+                else:
+                    model = "gemini-1.5-flash"
+                    summary_json = default_summary(req.query)
+                    summary_md = "Gemini is optional in MVP and not wired yet."
             except Exception:
+                model = "fallback"
                 summary_json = default_summary(req.query)
                 summary_md = "Summarization failed."
             db.add(
@@ -74,7 +84,7 @@ async def process_search_job(job_id: str, req: SearchRequest):
                     id=str(uuid.uuid4()),
                     paper_id=pid,
                     provider=settings.llm_provider,
-                    model="gpt-4o-mini" if settings.llm_provider == "openai" else "gemini-1.5-flash",
+                    model=model,
                     summary_json=json.dumps(summary_json, ensure_ascii=False),
                     summary_md=summary_md,
                     created_at=now(),

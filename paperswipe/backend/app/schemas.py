@@ -6,9 +6,10 @@ from pydantic import BaseModel
 
 class SettingsPayload(BaseModel):
     ieee_api_key: str = ""
-    llm_provider: Literal["openai", "gemini"] = "openai"
+    llm_provider: Literal["kimi", "openai", "gemini"] = "kimi"
     openai_api_key: str = ""
     gemini_api_key: str = ""
+    kimi_api_key: str = ""
     library_path: str = "./library"
     default_publication: str = "TIFS"
 

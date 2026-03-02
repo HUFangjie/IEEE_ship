@@ -6,9 +6,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class AppSettings(BaseSettings):
     ieee_api_key: str = ""
-    llm_provider: str = "openai"
+    llm_provider: str = "kimi"
     openai_api_key: str = ""
     gemini_api_key: str = ""
+    kimi_api_key: str = ""
     library_path: str = "/app/library"
     db_path: str = "/app/data/app.db"
     default_publication: str = "TIFS"

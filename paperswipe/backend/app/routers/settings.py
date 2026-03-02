@@ -14,6 +14,7 @@ def get_app_settings():
         "llm_provider": s.llm_provider,
         "openai_api_key_set": bool(s.openai_api_key),
         "gemini_api_key_set": bool(s.gemini_api_key),
+        "kimi_api_key_set": bool(s.kimi_api_key),
         "library_path": s.library_path,
         "default_publication": s.default_publication,
     }
