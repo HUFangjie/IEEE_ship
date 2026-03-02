@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: ./backend
+    container_name: paperswipe-backend
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./library:/app/library
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: paperswipe-frontend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
